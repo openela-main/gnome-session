@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=GNOME Shell Kiosk Mode
+Comment=Window manager
+Exec=env DCONF_PROFILE=redhatkiosk /usr/bin/gnome-shell --mode=redhat-kiosk
+Categories=GNOME;GTK;Core;
+OnlyShowIn=GNOME;
+NoDisplay=true
+X-GNOME-Autostart-Phase=DisplayServer
+X-GNOME-Provides=windowmanager;
+X-GNOME-Autostart-Notify=true
+X-GNOME-AutoRestart=false
+X-GNOME-HiddenUnderSystemd=true

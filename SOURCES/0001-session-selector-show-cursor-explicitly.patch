@@ -1,0 +1,124 @@
+From 06271eea2a12970fbe73b3d3f2c6ae5d79339379 Mon Sep 17 00:00:00 2001
+From: Ray Strode <rstrode@redhat.com>
+Date: Mon, 29 Jun 2020 15:15:48 -0400
+Subject: [PATCH] session-selector: show cursor explicitly
+
+Normally the window manager would show the cursor at start up, but
+the session selector runs when no window manager is present.
+
+This commit makes the session selector explicitly set a cursor, so
+users can interact with the dialog using the mouse.
+---
+ tools/gnome-session-selector.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/tools/gnome-session-selector.c b/tools/gnome-session-selector.c
+index 71892c43..9225639e 100644
+--- a/tools/gnome-session-selector.c
++++ b/tools/gnome-session-selector.c
+@@ -594,60 +594,61 @@ auto_save_next_session_if_needed (void)
+ static int
+ compare_sessions (GtkTreeModel *model,
+                   GtkTreeIter  *a,
+                   GtkTreeIter  *b,
+                   gpointer      data)
+ {
+     char *name_a, *name_b;
+     int result;
+ 
+     gtk_tree_model_get (model, a, 0, &name_a, -1);
+     gtk_tree_model_get (model, b, 0, &name_b, -1);
+ 
+     result = g_utf8_collate (name_a, name_b);
+ 
+     g_free (name_a);
+     g_free (name_b);
+ 
+     return result;
+ }
+ 
+ static void
+ on_map (GtkWidget *widget,
+         gpointer   data)
+ {
+         gdk_window_focus (gtk_widget_get_window (widget), GDK_CURRENT_TIME);
+ }
+ 
+ int
+ main (int argc, char *argv[])
+ {
++        GdkCursor *cursor;
+         GtkWidget *window;
+         GtkWidget *widget;
+         GtkCellRenderer *cell;
+         GtkTreeViewColumn *column;
+         GtkTreeSelection *selection;
+         GError *error;
+ 
+         if (getenv ("SESSION_MANAGER") != NULL)
+             return 1;
+ 
+         gtk_init (&argc, &argv);
+         if (argc > 1) {
+                 g_print ("create and select session\n");
+                 if (!create_and_select_session (argv[1]))
+                         return 1;
+                 else
+                         return 0;
+         }
+ 
+         builder = gtk_builder_new ();
+         gtk_builder_set_translation_domain (builder, GETTEXT_PACKAGE);
+ 
+         error = NULL;
+         if (!gtk_builder_add_from_file (builder, GTKBUILDER_DIR "/" "session-selector.ui",  &error)) {
+                 g_warning ("Could not load file 'session-selector.ui': %s", error->message);
+                 exit (1);
+         }
+ 
+         window = (GtkWidget *) gtk_builder_get_object (builder, "main-window");
+ 
+@@ -663,36 +664,40 @@ main (int argc, char *argv[])
+         session_list = (GtkWidget *) gtk_builder_get_object (builder, "session-list");
+ 
+         selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (session_list));
+         gtk_tree_selection_set_mode (selection, GTK_SELECTION_SINGLE);
+ 
+         populate_session_list (session_list);
+ 
+         cell = gtk_cell_renderer_text_new ();
+         g_signal_connect (cell, "edited", G_CALLBACK (on_row_edited), NULL);
+ 
+         column = gtk_tree_view_column_new_with_attributes ("", cell, "text", 0, NULL);
+         gtk_tree_view_append_column (GTK_TREE_VIEW (session_list), GTK_TREE_VIEW_COLUMN (column));
+ 
+         g_signal_connect (session_list, "row-activated", G_CALLBACK (on_row_activated), NULL);
+ 
+         g_signal_connect (selection, "changed",
+                           G_CALLBACK (on_selection_changed), NULL);
+ 
+         widget = (GtkWidget *) gtk_builder_get_object (builder, "new-session");
+         g_signal_connect (widget, "clicked", G_CALLBACK (on_new_session_clicked), NULL);
+         widget = (GtkWidget *) gtk_builder_get_object (builder, "remove-session");
+         g_signal_connect (widget, "clicked", G_CALLBACK (on_remove_session_clicked), NULL);
+         widget = (GtkWidget *) gtk_builder_get_object (builder, "rename-session");
+         g_signal_connect (widget, "clicked", G_CALLBACK (on_rename_session_clicked), NULL);
+         widget = (GtkWidget *) gtk_builder_get_object (builder, "continue-button");
+         g_signal_connect (widget, "clicked", G_CALLBACK (on_continue_clicked), NULL);
+ 
+         g_signal_connect (window, "map", G_CALLBACK (on_map), NULL);
+         gtk_widget_show (window);
+ 
++        cursor = gdk_cursor_new_from_name (gtk_widget_get_display (window),
++                                           "default");
++        gdk_window_set_cursor (gtk_widget_get_window (window), cursor);
++
+         gtk_main ();
+ 
+         auto_save_next_session_if_needed ();
+ 
+         return 0;
+ }
+-- 
+2.26.0
+

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Kiosk (with on-screen keyboard)
+Comment=Kiosk mode with on-screen keyboard
+Exec=/usr/bin/env DCONF_PROFILE=redhatkiosk /usr/bin/gnome-session --session=redhat-kiosk-with-keyboard
+DesktopNames=Red-Hat-Kiosk;GNOME;
+

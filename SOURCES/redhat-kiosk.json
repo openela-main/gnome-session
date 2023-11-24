@@ -1,0 +1,11 @@
+{
+    "parentMode": "user",
+    "hasOverview": false,
+    "hasRunDialog": false,
+    "allowSettings": false,
+    "panel": { "left": [""],
+               "center": [],
+               "right": ["keyboard"]
+             }
+}
+

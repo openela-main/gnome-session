@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Kiosk
+Comment=Kiosk mode
+Exec=/usr/bin/gnome-session --session=redhat-kiosk
+DesktopNames=Red-Hat-Kiosk;GNOME;
+
