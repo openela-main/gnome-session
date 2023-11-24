@@ -1,0 +1,90 @@
+From 15be30033e5b24a8c84a4d4338da0e8a3930303a Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Tue, 14 Aug 2018 14:49:59 +0200
+Subject: [PATCH] Fedora: Set grub boot-flags on shutdown / reboot
+
+Fedora's grub will automatically hide the boot-menu if the previous
+boot has set the boot_success flag in grub's environment. This happens
+automatically 30 seconds after login.
+
+But if the user shuts down or reboots from the system-menu before then
+(e.g. directly from gdm) then the boot_success flag gets not set. If
+a reboot / shutdown is initiated through gnome-session then the user
+is successfully interacting with the system, so set the boot_success
+flag from gnome_session for this case to fix reboot from gdm leading to
+the boot-menu not being hidden.
+---
+ gnome-session/gsm-manager.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/gnome-session/gsm-manager.c b/gnome-session/gsm-manager.c
+index 3cf421cd..924767af 100644
+--- a/gnome-session/gsm-manager.c
++++ b/gnome-session/gsm-manager.c
+@@ -3629,51 +3629,63 @@ on_shutdown_prepared (GsmSystem  *system,
+                       gboolean    success,
+                       GsmManager *manager)
+ {
+         g_debug ("GsmManager: on_shutdown_prepared, success: %d", success);
+         g_signal_handlers_disconnect_by_func (system, on_shutdown_prepared, manager);
+ 
+         if (success) {
+                 /* move to end-session phase */
+                 g_assert (manager->priv->phase == GSM_MANAGER_PHASE_QUERY_END_SESSION);
+                 manager->priv->phase++;
+                 start_phase (manager);
+         } else {
+                 disconnect_shell_dialog_signals (manager);
+                 gsm_shell_close_end_session_dialog (manager->priv->shell);
+                 /* back to running phase */
+                 cancel_end_session (manager);
+         }
+ }
+ 
+ static gboolean
+ do_query_end_session_exit (GsmManager *manager)
+ {
+         gboolean reboot = FALSE;
+         gboolean shutdown = FALSE;
+ 
+         switch (manager->priv->logout_type) {
+         case GSM_MANAGER_LOGOUT_LOGOUT:
+                 break;
+         case GSM_MANAGER_LOGOUT_REBOOT:
+         case GSM_MANAGER_LOGOUT_REBOOT_INTERACT:
++                /*
++                 * Fedora specific patch to make sure the boot-menu does not
++                 * show when it is configured to auto-hide and a reboot is
++                 * initiated directly from gdm.
++                 */
++                system("/usr/sbin/grub2-set-bootflag boot_success");
+                 reboot = TRUE;
+                 break;
+         case GSM_MANAGER_LOGOUT_SHUTDOWN:
+         case GSM_MANAGER_LOGOUT_SHUTDOWN_INTERACT:
++                /*
++                 * Fedora specific patch to make sure the boot-menu does not
++                 * show when it is configured to auto-hide and a shutdown is
++                 * initiated directly from gdm.
++                 */
++                system("/usr/sbin/grub2-set-bootflag boot_success");
+                 shutdown = TRUE;
+                 break;
+         default:
+                 g_warning ("Unexpected logout type %d in do_query_end_session_exit()",
+                            manager->priv->logout_type);
+                 break;
+         }
+ 
+         if (reboot || shutdown) {
+                 g_signal_connect (manager->priv->system, "shutdown-prepared",
+                                   G_CALLBACK (on_shutdown_prepared), manager);
+                 gsm_system_prepare_shutdown (manager->priv->system, reboot);
+                 return FALSE; /* don't leave query end session yet */
+         }
+ 
+         return TRUE; /* go to end session phase */
+ }
+-- 
+2.31.1
+

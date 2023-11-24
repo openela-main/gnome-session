@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Kiosk
+Type=Application
+Exec=redhat-kiosk
+

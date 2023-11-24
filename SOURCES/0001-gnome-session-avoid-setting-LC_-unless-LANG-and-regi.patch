@@ -1,0 +1,63 @@
+From a42ccfa0e8be2e658d081c3637ff0f43e2b38d3c Mon Sep 17 00:00:00 2001
+From: Takao Fujiwara <tfujiwar@redhat.com>
+Date: Tue, 22 Oct 2019 20:44:04 +0900
+Subject: [PATCH] gnome-session: avoid setting LC_ unless LANG and region
+ disagree
+
+At the moment, gnome-session explicitly sets the various LC_ variables
+to the user configured region.
+
+That's unnecessary, though.  If the LC_ variables are unset,
+applications know to use LANG.  Furthermore, setting the LC_ variables
+makes it so you can't override them with LANG anymore.
+
+This commit makes sure the LC_ variables only get set when absolutely
+necesary. That is, when they are different than LANG.
+
+https://gitlab.gnome.org/GNOME/gnome-session/issues/37
+---
+ gnome-session/gnome-session.in | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
+
+diff --git a/gnome-session/gnome-session.in b/gnome-session/gnome-session.in
+index 7d967d34..90566f1d 100755
+--- a/gnome-session/gnome-session.in
++++ b/gnome-session/gnome-session.in
+@@ -1,25 +1,29 @@
+ #!/bin/sh
+ 
+ if [ "x$XDG_SESSION_TYPE" = "xwayland" ] &&
+    [ "x$XDG_SESSION_CLASS" != "xgreeter" ] &&
+    [  -n "$SHELL" ]; then
+   if [ "$1" != '-l' ]; then
+     exec bash -c "exec -l '$SHELL' -c '$0 -l $*'"
+   else
+     shift
+   fi
+ fi
+ 
+ SETTING=$(gsettings get org.gnome.system.locale region)
+ REGION=${SETTING#\'}
+ REGION=${REGION%\'}
+ 
+ if [ -n "$REGION" ]; then
+-  export LC_TIME=$REGION
+-  export LC_NUMERIC=$REGION
+-  export LC_MONETARY=$REGION
+-  export LC_MEASUREMENT=$REGION
+-  export LC_PAPER=$REGION
++  unset LC_TIME LC_NUMERIC LC_MONETARY LC_MEASUREMENT LC_PAPER
++
++  if [ "$LANG" != "$REGION" ] ; then
++    export LC_TIME=$REGION
++    export LC_NUMERIC=$REGION
++    export LC_MONETARY=$REGION
++    export LC_MEASUREMENT=$REGION
++    export LC_PAPER=$REGION
++  fi
+ fi
+ 
+ exec @libexecdir@/gnome-session-binary "$@"
+-- 
+2.41.0.rc2
+

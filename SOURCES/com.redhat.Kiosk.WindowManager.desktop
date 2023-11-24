@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Mutter
+Comment=Window manager
+Exec=/usr/bin/mutter
+Categories=GNOME;GTK;Core;
+OnlyShowIn=GNOME;
+NoDisplay=true
+X-GNOME-Autostart-Phase=DisplayServer
+X-GNOME-Provides=windowmanager;
+X-GNOME-Autostart-Notify=true
+X-GNOME-AutoRestart=false
+X-GNOME-HiddenUnderSystemd=true

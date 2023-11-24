@@ -1,0 +1,38 @@
+[org/gnome/desktop/a11y/applications]
+screen-keyboard-enabled=true
+
+[org/gnome/desktop/interface]
+gtk-im-module='ibus'
+toolkit-accessibility=true
+
+[org/gnome/desktop/lockdown]
+disable-command-line=true
+disable-lock-screen=true
+disable-application-handlers=true
+disable-user-switching=true
+user-administration-disabled=true
+
+[org/gnome/desktop/wm/keybindings]
+always-on-top=@as []
+begin-move=@as []
+begin-resize=@as []
+close=@as []
+lower=@as []
+maximize=@as []
+maximize-horizontally=@as []
+maximize-vertically=@as []
+minimize=@as []
+panel-main-menu=@as []
+panel-run-dialog=@as []
+raise=@as []
+raise-or-lower=@as []
+show-desktop=@as []
+toggle-fullscreen=@as []
+toggle-maximized=@as []
+unmaximize=@as []
+
+[org/gnome/desktop/wm/preferences]
+num-workspaces=1
+
+[org/gnome/mutter]
+dynamic-workspaces=false
