@@ -1,0 +1,8 @@
+/org/gnome/desktop/a11y/applications/screen-keyboard-enabled
+/org/gnome/desktop/interface/gtk-im-module
+/org/gnome/desktop/interface/toolkit-accessibility
+/org/gnome/desktop/lockdown/disable-command-line
+/org/gnome/desktop/lockdown/disable-lock-screen
+/org/gnome/desktop/lockdown/disable-application-handlers
+/org/gnome/desktop/lockdown/disable-user-switching
+/org/gnome/desktop/lockdown/user-administration-disabled

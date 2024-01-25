@@ -1,0 +1,29 @@
+#!/bin/sh
+
+if [ ! -e ~/.local/bin/redhat-kiosk ]; then
+    mkdir -p ~/.local/bin ~/.config
+    cat > ~/.local/bin/redhat-kiosk << EOF
+#!/bin/sh
+# This script is located in ~/.local/bin.
+# It's provided as an example script to show how
+# the kiosk session works.  At the moment, the script
+# just starts a text editor open to itself, but it
+# should get customized to instead start a full screen
+# application designed for the kiosk deployment.
+# The "while true" bit just makes sure the application gets
+# restarted if it dies for whatever reason.
+
+while true; do
+    gedit ~/.local/bin/redhat-kiosk
+done
+
+EOF
+
+    chmod +x ~/.local/bin/redhat-kiosk
+    touch ~/.config/gnome-initial-setup-done
+fi
+
+export DCONF_PROFILE=redhatkiosk
+systemctl --user import-environment DCONF_PROFILE
+
+exec ~/.local/bin/redhat-kiosk "$@"

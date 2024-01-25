@@ -1,0 +1,3 @@
+[GNOME Session]
+Name=Kiosk
+RequiredComponents=com.redhat.KioskWithKeyboard.WindowManager;com.redhat.Kiosk.Script;
