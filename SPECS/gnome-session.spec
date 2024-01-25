@@ -9,7 +9,7 @@
 
 Name: gnome-session
 Version: 3.28.1
-Release: 20%{?dist}
+Release: 21%{?dist}
 Summary: GNOME session manager
 
 License: GPLv2+
@@ -55,6 +55,10 @@ Patch20001: 0001-Fedora-Set-grub-boot-flags-on-shutdown-reboot.patch
 # Make some debug spew only show up if debugging is enabled
 # https://bugzilla.redhat.com/show_bug.cgi?id=1877997
 Patch30001: 0001-main-only-log-check-accelerated-errors-when-debuggin.patch
+
+# Allow user to override language settings
+# https://bugzilla.redhat.com/show_bug.cgi?id=2170474
+Patch40001: 0001-gnome-session-avoid-setting-LC_-unless-LANG-and-regi.patch
 
 BuildRequires: meson
 BuildRequires: gcc
@@ -224,10 +228,14 @@ dconf update
 %{_datadir}/glib-2.0/schemas/org.gnome.SessionManager.gschema.xml
 
 %changelog
+* Wed May 31 2023 Ray Strode <rstrode@redhat.com> - 3.28.1-21
+- Allow users to override language settings in environment
+  Resolves: #2170474
+
 * Wed Mar 01 2023 Ray Strode <rstrode@redhat.com> - 3.28.1-20
 - Work around dconf log spew by renaming dconf profile
   Related: 2070976
-  Resolves: #2175124
+  Resolves: #2174414
 
 * Tue Feb 28 2023 Ray Strode <rstrode@redhat.com> - 3.28.1-19
 - Another fix
