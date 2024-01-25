@@ -1,0 +1,27 @@
+[Desktop Entry]
+Name[de]=Standard (Wayland Anzeige-Server)
+Name[es]=Estándar (servidor gráfico Wayland)
+Name[fr]=Standard (serveur affichage Wayland)
+Name[it]=Standard (server grafico Wayland)
+Name[ja]=スタンダード (Wayland ディスプレイサーバー)
+Name[ko]=스탠다드 (Wayland 디스플레이 서버)
+Name[pt_BR]=Padrão (servidor de exibição Wayland)
+Name[ru]=Стандартный (дисплейный сервер Wayland)
+Name[zh_CN]=标准（Wayland 显示服务器）
+Name[zh_TW]=標準（Wayland顯示服務器）
+Name=Standard (Wayland display server)
+Comment[de]=Diese Sitzung meldet Sie bei GNOME an
+Comment[es]=Esta sesión accede a GNOME
+Comment[fr]=Cette session vous connecte dans GNOME
+Comment[it]=Questa sessione esegue l'accesso in GNOME
+Comment[ja]=このセッションで GNOME にログインします
+Comment[ko]=이 세션을 사용하면 그놈에 로그인합니다
+Comment[pt_BR]=Essa sessão o leva ao GNOME
+Comment[ru]=Этот сеанс позволяет вам войти в GNOME
+Comment[zh_CN]=此会话将您登录到 GNOME
+Comment[zh_TW]=這個工作階段讓您登入 GNOME
+Comment=This session logs you into GNOME
+Exec=gnome-session
+TryExec=gnome-session
+Type=Application
+DesktopNames=GNOME
